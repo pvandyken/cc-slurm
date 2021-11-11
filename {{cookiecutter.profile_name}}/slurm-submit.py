@@ -4,6 +4,15 @@ import sys
 
 from snakemake.utils import read_job_properties
 
+import utils
+
+RESOURCE_MAPPING = {
+    "time": ("time", "runtime", "walltime"),
+    "mem": ("mem", "mem_mb", "ram", "memory"),
+    "mem-per-cpu": ("mem-per-cpu", "mem_per_cpu", "mem_per_thread"),
+    "nodes": ("nodes", "nnodes"),
+}
+
 # last command-line argument is the job script
 jobscript = sys.argv[-1]
 
@@ -27,26 +36,28 @@ else:
     raise NotImplementedError(f"Don't know what to do with job_properties['type']=={job_properties['type']}")
 
 
+slurm_options = utils.convert_job_properties(job_properties, RESOURCE_MAPPING)
+
 #get values and set defaults
-if 'time' in job_properties["resources"].keys():
-    time = min(job_properties["resources"]["time"],{{cookiecutter.max_time}})
-else:  
+if 'time' in slurm_options:
+    time = min(slurm_options["time"],{{cookiecutter.max_time}})
+else:
     time = {{cookiecutter.default_time}}
 
-if 'mem_mb' in job_properties["resources"].keys():
-    mem_mb = min(job_properties["resources"]["mem_mb"],{{cookiecutter.max_mem_mb}})
-else:  
+if 'mem_mb' in slurm_options.keys():
+    mem_mb = min(slurm_options["mem_mb"],{{cookiecutter.max_mem_mb}})
+else:
     mem_mb = {{cookiecutter.default_mem_mb}}
 
-if 'gpus' in job_properties["resources"].keys():
-    gpus = min(job_properties["resources"]["gpus"],{{cookiecutter.max_gpus}})
-else:  
+if 'gpus' in slurm_options.keys():
+    gpus = min(slurm_options["gpus"],{{cookiecutter.max_gpus}})
+else:
     gpus = 0
 
-threads = min(job_properties["threads"],{{cookiecutter.max_threads}})
+threads = min(slurm_options['threads'],{{cookiecutter.max_threads}})
 
 
-log = os.path.realpath(os.path.join('logs','slurm',f'slurm_%j_{job_name}.out'))
+log = os.path.realpath(os.path.join('logs','slurm',f'{job_name}.%j.out'))
 
 #create the log directory (slurm fails if doesn't exist)
 log_dir = os.path.dirname(log)
