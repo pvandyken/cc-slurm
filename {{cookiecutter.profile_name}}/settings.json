@@ -1,0 +1,13 @@
+{
+    "CLUSTER_NAME": "",
+    "MAX_TIME": "{{cookiecutter.max_time}}",
+    "DEFAULT_TIME": "{{cookiecutter.default_time}}",
+    "MAX_MEM_MB": "{{cookiecutter.max_mem_mb}}",
+    "DEFAULT_MEM_MB": "{{cookiecutter.default_mem_mb}}",
+    "MAX_GPUS": "{{cookiecutter.max_gpus}}",
+    "MAX_THREADS": "{{cookiecutter.max_threads}}",
+    "ACCOUNT": "{{cookiecutter.account}}",
+    "TEST_MODE": "{{cookiecutter.test_mode}}"
+}
+
+

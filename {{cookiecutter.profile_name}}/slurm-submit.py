@@ -4,6 +4,8 @@ import sys
 
 from snakemake.utils import read_job_properties
 
+from cookie_cutter import CookieCutter
+
 import utils
 
 RESOURCE_MAPPING = {
@@ -24,7 +26,7 @@ job_properties = read_job_properties(jobscript)
 
 
 # get account from CC_COMPUTE_ALLOC, else supply default account
-account = "{{cookiecutter.account}}"
+account = CookieCutter.ACCOUNT
 
 if job_properties["type"]=='single':
     job_name = job_properties['rule']
@@ -40,21 +42,21 @@ slurm_options = utils.convert_job_properties(job_properties, RESOURCE_MAPPING)
 
 #get values and set defaults
 if 'time' in slurm_options:
-    time = min(slurm_options["time"],{{cookiecutter.max_time}})
+    time = min(slurm_options["time"],CookieCutter.MAX_TIME)
 else:
-    time = {{cookiecutter.default_time}}
+    time = CookieCutter.DEFAULT_TIME
 
 if 'mem_mb' in slurm_options.keys():
-    mem_mb = min(slurm_options["mem_mb"],{{cookiecutter.max_mem_mb}})
+    mem_mb = min(slurm_options["mem_mb"],CookieCutter.MAX_MEM_MB)
 else:
-    mem_mb = {{cookiecutter.default_mem_mb}}
+    mem_mb = CookieCutter.DEFAULT_MEM_MB
 
 if 'gpus' in slurm_options.keys():
-    gpus = min(slurm_options["gpus"],{{cookiecutter.max_gpus}})
+    gpus = min(slurm_options["gpus"],CookieCutter.MAX_GPUS)
 else:
     gpus = 0
 
-threads = min(slurm_options['threads'],{{cookiecutter.max_threads}})
+threads = min(slurm_options.get('threads', 1), CookieCutter.MAX_THREADS)
 
 
 log = os.path.realpath(os.path.join('logs','slurm',f'{job_name}.%j.out'))
@@ -75,9 +77,17 @@ else:
     gpu_arg = ''
 
 # set all the slurm submit options as before
-slurm_args = f" --parsable --account={account} {gpu_arg} --time={time} --mem={mem_mb} --cpus-per-task={threads} --output={log} "
+slurm_args = [
+    " --parsable",
+    f"--account={account}",
+    gpu_arg,
+    f"--time={time}",
+    f"--mem={mem_mb}",
+    f"--cpus-per-task={threads}",
+    f"--output={log} "
+]
 
-cmdline.append(slurm_args)
+cmdline.extend(slurm_args)
 
 if dependencies:
     cmdline.append("--dependency")
@@ -87,4 +97,4 @@ if dependencies:
 
 cmdline.append(jobscript)
 
-os.system(" ".join(cmdline))
+print(utils.submit_job(cmdline, test=CookieCutter.TEST_MODE))

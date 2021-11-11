@@ -1,7 +1,8 @@
-cluster: "~/.config/snakemake/{{cookiecutter.profile_name}}/slurm-submit.py {dependencies}"
-#cluster-status: "~/.config/snakemake/{{cookiecutter.profile_name}}/slurm-status.py"  #not fully tested yet.. better to rely on filesystem checks..  
+cluster: "slurm-submit.py {dependencies}"
+cluster-status: "slurm-status.py"  #not fully tested yet.. better to rely on filesystem checks..
 jobscript: "slurm-jobscript.sh"
 jobs: 500
+latency-wait: 60
 verbose: {{cookiecutter.verbose}}
 use-singularity: {{cookiecutter.use_singularity}}
 use-envmodules: {{cookiecutter.use_envmodules}}
@@ -9,12 +10,13 @@ singularity-args: '\-e'
 immediate-submit: {{cookiecutter.immediate_submit}}
 notemp: {{cookiecutter.immediate_submit}} #notemp set to the value of immediate_submit (since both have to be true together)
 max-jobs-per-second: 2
-#max-status-checks-per-second: 0.2
-#restart-times: 1
-default-resources: "mem_mb={{cookiecutter.default_mem_mb}}" #this is for ensuring grouped-jobs have enough memory (ie. sum of memory request)
+max-status-checks-per-second: 1
+restart-times: 1
 local-cores: 1
-singularity-prefix: '/project/ctb-akhanf/akhanf/singularity/snakemake_containers'
-notebook-listen: '$(hostname -f):8888'
+#singularity-prefix: '/project/ctb-akhanf/akhanf/singularity/snakemake_containers'
 rerun-incomplete: True
 keep-going: True
 show-failed-logs: True
+
+cores: 32
+resources: 'mem_mb=502000'

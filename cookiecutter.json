@@ -9,10 +9,11 @@
     "max_mem_mb": 64000,
     "max_gpus": 1,
     "max_threads": 16,
-    "immediate_submit": true,
+    "immediate_submit": [true, false],
     "use_singularity": true,
     "use_envmodules": true,
     "verbose": false,
-    "singularity_prefix": "/project/6050199/akhanf/singularity/snakemake_containers/"
+    "singularity_prefix": "/project/6050199/akhanf/singularity/snakemake_containers/",
+    "test_mode": [false, true]
 }
 
