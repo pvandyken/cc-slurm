@@ -67,34 +67,33 @@ if not os.path.exists(os.path.dirname(log)):
     os.makedirs(log_dir)
 
 
-
-# collect all command-line options in an array
-cmdline = ["sbatch"]
-
 if gpus > 0:
-    gpu_arg = f'--gres=gpu:{{cookiecutter.gpu_type}}:{gpus}'
+    gpu_arg = f'--gres=gpu:t4:{gpus}'
 else:
     gpu_arg = ''
 
+if dependencies:
+    # only keep numbers in dependencies list
+    dependencies = [ x for x in dependencies if x.isdigit() or CookieCutter.TEST_MODE ]
+    dependency_args = [
+        "--dependency",
+        "afterok:" + ",".join(dependencies)
+    ]
+else:
+    dependency_args = []
+
 # set all the slurm submit options as before
-slurm_args = [
+cmdline = [*filter(None, [
+    "sbatch",
     "--parsable",
     f"--account={account}",
     gpu_arg,
     f"--time={time}",
     f"--mem={mem_mb}",
     f"--cpus-per-task={threads}",
-    f"--output={log}"
-]
-
-cmdline.extend(slurm_args)
-
-if dependencies:
-    cmdline.append("--dependency")
-    # only keep numbers in dependencies list
-    dependencies = [ x for x in dependencies if x.isdigit() ]
-    cmdline.append("afterok:" + ",".join(dependencies))
-
-cmdline.append(jobscript)
+    f"--output={log}",
+    *dependency_args,
+    jobscript
+])]
 
 print(utils.submit_job(cmdline, test=CookieCutter.TEST_MODE))
