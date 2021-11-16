@@ -14,7 +14,7 @@ STATUS_ATTEMPTS = 20
 def main():
     jobid = sys.argv[1]
 
-    if jobid == "__TEST__":
+    if "__TEST__" in jobid:
         return "success"
 
     cluster = CookieCutter.get_cluster_option()

@@ -2,6 +2,7 @@ import subprocess as sp
 import shlex
 import re
 from pathlib import Path
+from random import randrange
 from typing import List
 
 def convert_job_properties(job_properties, resource_mapping=None):
@@ -29,7 +30,7 @@ def submit_job(slurm_cmd: List[str], test: bool=False):
             data = f.read()
         with file.open('w') as f:
             f.write(data + shlex.join(slurm_cmd) + "\n")
-        return "__TEST__"
+        return f"__TEST__{randrange(1000000000, 9999999999)}"
     else:
         try:
             res = sp.check_output(slurm_cmd)
@@ -37,11 +38,8 @@ def submit_job(slurm_cmd: List[str], test: bool=False):
             raise e
         # Get jobid
         res = res.decode()
-        if test:
-            jobid = "__TEST__"
-        else:
-            try:
-                jobid = re.search(r"(\d+)", res).group(1)
-            except Exception as e:
-                raise e
+        try:
+            jobid = re.search(r"(\d+)", res).group(1)
+        except Exception as e:
+            raise e
         return jobid

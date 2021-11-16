@@ -46,8 +46,8 @@ if 'time' in slurm_options:
 else:
     time = CookieCutter.DEFAULT_TIME
 
-if 'mem_mb' in slurm_options.keys():
-    mem_mb = min(slurm_options["mem_mb"],CookieCutter.MAX_MEM_MB)
+if 'mem' in slurm_options.keys():
+    mem_mb = min(slurm_options["mem"],CookieCutter.MAX_MEM_MB)
 else:
     mem_mb = CookieCutter.DEFAULT_MEM_MB
 
@@ -78,13 +78,13 @@ else:
 
 # set all the slurm submit options as before
 slurm_args = [
-    " --parsable",
+    "--parsable",
     f"--account={account}",
     gpu_arg,
     f"--time={time}",
     f"--mem={mem_mb}",
     f"--cpus-per-task={threads}",
-    f"--output={log} "
+    f"--output={log}"
 ]
 
 cmdline.extend(slurm_args)
