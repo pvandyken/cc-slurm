@@ -1,5 +1,6 @@
 cluster: "slurm-submit.py {dependencies}"
 cluster-status: "slurm-status.py"  #not fully tested yet.. better to rely on filesystem checks..
+cluster-cancel: "scancel"
 jobscript: "slurm-jobscript.sh"
 jobs: 500
 latency-wait: 60

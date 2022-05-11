@@ -19,7 +19,7 @@ class CookieCutter:
     MAX_GPUS = int(settings['MAX_GPUS'])
     MAX_THREADS = int(settings['MAX_THREADS'])
     ACCOUNT = settings['ACCOUNT']
-    TEST_MODE = settings['TEST_MODE']
+    TEST_MODE = False if settings['TEST_MODE'] == 'False' else True
 
     @staticmethod
     def get_cluster_option() -> str:

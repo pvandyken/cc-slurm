@@ -13,6 +13,7 @@ RESOURCE_MAPPING = {
     "mem": ("mem", "mem_mb", "ram", "memory"),
     "mem-per-cpu": ("mem-per-cpu", "mem_per_cpu", "mem_per_thread"),
     "nodes": ("nodes", "nnodes"),
+    "gpus": ("gpus", "gpu"),
 }
 
 # last command-line argument is the job script
@@ -56,7 +57,7 @@ if 'gpus' in slurm_options.keys():
 else:
     gpus = 0
 
-threads = min(slurm_options.get('threads', 1), CookieCutter.MAX_THREADS)
+threads = min(slurm_options.get('cpus-per-task', 1), CookieCutter.MAX_THREADS)
 
 
 log = os.path.realpath(os.path.join('logs','slurm',f'{job_name}.%j.out'))

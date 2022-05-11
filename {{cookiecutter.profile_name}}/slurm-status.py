@@ -15,7 +15,7 @@ def main():
     jobid = sys.argv[1]
 
     if "__TEST__" in jobid:
-        return "success"
+        return "failed"
 
     cluster = CookieCutter.get_cluster_option()
 
